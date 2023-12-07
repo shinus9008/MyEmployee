@@ -25,6 +25,10 @@ namespace MyEmployee.Client.Wpf.Views
         public EmployeeListView()
         {
             InitializeComponent();
+            this.WhenActivated(disposables =>
+            {
+                DataContext = ViewModel;
+            });
         }
     }
 }

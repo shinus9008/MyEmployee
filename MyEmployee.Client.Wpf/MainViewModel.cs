@@ -13,8 +13,6 @@ namespace MyEmployee.Client.Wpf
     /// </remarks>
     public class MainViewModel : ReactiveObject, IScreen
     {
-        DynamicData.SourceCache<EmployeeModel, int> cache = new DynamicData.SourceCache<EmployeeModel, int>(i => i.Id);
-
         public MainViewModel()
         {
             // Создаем навигатор
@@ -45,13 +43,5 @@ namespace MyEmployee.Client.Wpf
         
     }
 
-    public class EmployeeModel
-    {
-        public int Id { get; set; }
-    }
-
-    public class EmployeeViewModel
-    {
-        public int Id { get; set; }
-    }
+    
 }

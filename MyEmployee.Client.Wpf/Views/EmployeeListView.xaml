@@ -10,7 +10,58 @@
              xmlns:vm="clr-namespace:MyEmployee.Client.Wpf.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
             
+        </ResourceDictionary>        
+    </UserControl.Resources>    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--Строка 1: Отображает меню наверху-->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="15" HorizontalAlignment="Right">
+            <!--Кнопа: New-->
+            <Button x:Name="GoNewButton" Content="New" Height="35" Width="75"/>          
+        </StackPanel>
+
+        <!--Строка 2: Отображает список сотрудников-->
+        <ListBox x:Name="Items" Grid.Row="1" ItemsSource="{Binding Path=Items}" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <!--Стиль: Растягивам во всю длину-->
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <!--Шаблон: Строки-->
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="{Binding Path= Id}" />
+
+                        <Button Grid.Column="2" Content="Details"   Height="35" Width="75"/>
+                        <Button Grid.Column="3" Content="Edit"   Height="35" Width="75"/>
+                        <Button Grid.Column="4" Content="Delete" Height="35" Width="75"/>
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
     </Grid>
 </rxui:ReactiveUserControl>
