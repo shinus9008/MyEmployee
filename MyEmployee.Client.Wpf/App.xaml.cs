@@ -16,13 +16,8 @@ namespace MyEmployee.Client.Wpf
 
         public App()
         {
-            // Находит все IViewFor в сборке и регистрирует в контейнере
-            Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetExecutingAssembly());
 
-
-
-            //Locator.CurrentMutable.RegisterLazySingleton(() => new AppViewLocator(), typeof(IViewLocator));
-        }
+        }        
     }
 
 }

@@ -8,10 +8,13 @@ namespace MyEmployee.Client.Wpf
     /// </summary>
     public partial class MainWindow : ReactiveWindow<MainViewModel>
     {
+        public AppBootstrapper AppBootstrapper { get; protected set; }
+
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel = new MainViewModel();
+            AppBootstrapper = new AppBootstrapper();
+            ViewModel       = new MainViewModel();
             this.WhenActivated(disposables =>
             {
                 // Когда вюшка создается привязываем свойства

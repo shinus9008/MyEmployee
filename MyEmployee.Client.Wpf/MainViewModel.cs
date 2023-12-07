@@ -39,8 +39,6 @@ namespace MyEmployee.Client.Wpf
         public ReactiveCommand<Unit, IRoutableViewModel> GoNext { get; }
 
         public ReactiveCommand<Unit, IRoutableViewModel> GoBack { get; }
-
-        
     }
 
     

@@ -9,6 +9,11 @@ namespace MyEmployee.Client.Wpf
     /// </summary>
     public class AppViewLocator : IViewLocator
     {
+        public AppViewLocator()
+        {
+            
+        }
+
         public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
         {
             if (viewModel == null)
