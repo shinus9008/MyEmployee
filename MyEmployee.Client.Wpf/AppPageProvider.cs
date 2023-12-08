@@ -4,6 +4,9 @@ using ReactiveUI;
 
 namespace MyEmployee.Client.Wpf.ViewModels
 {
+    /// <summary>
+    /// Реализация <see cref="IPageProvider"/>
+    /// </summary>
     public class AppPageProvider : IPageProvider
     {
         private readonly IServiceProvider serviceProvider;
@@ -13,8 +16,12 @@ namespace MyEmployee.Client.Wpf.ViewModels
             this.serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        /// Возвращает главню страницу ( <see cref="EmployeeListViewModel"/> )
+        /// </summary>       
         public IRoutableViewModel GetMainPage(IScreen? screen = null)
         {
+            // Создаем через активатор
             return ActivatorUtilities.GetServiceOrCreateInstance<EmployeeListViewModel>(serviceProvider);
         }
     }

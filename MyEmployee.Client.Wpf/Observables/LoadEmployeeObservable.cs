@@ -1,7 +1,6 @@
 ﻿using DynamicData;
 using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Models;
-using MyEmployee.Client.Wpf.Services;
 using MyEmployee.Client.Wpf.SmaleTasks;
 using ReactiveUI;
 using System.Reactive.Concurrency;

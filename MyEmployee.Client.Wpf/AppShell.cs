@@ -6,11 +6,8 @@ using System.Reactive.Linq;
 namespace MyEmployee.Client.Wpf
 {
     /// <summary>
-    /// Главная вюшка. Отвечает за навигацию по IRoutableViewModel
-    /// </summary>
-    /// <remarks>
-    /// Отвечает за навигацию по ViewModels
-    /// </remarks>
+    /// Главная вюшка (IScreen). Отвечает за навигацию по IRoutableViewModel
+    /// </summary>    
     public class AppShell : ReactiveObject, IScreen
     {
         //TOOD: Проверить время жизни страниц при навигации!
@@ -43,14 +40,17 @@ namespace MyEmployee.Client.Wpf
         }
 
 
-        /// <summary>
-        /// Управляет навигацией
-        /// </summary>
+        /// <inheritdoc/>       
         public RoutingState Router { get; }
 
-        
+        /// <summary>
+        /// Переход на главную страницу
+        /// </summary>
         public ReactiveCommand<Unit, IRoutableViewModel> GoNext { get; }
 
+        /// <summary>
+        /// Возврат на предидущую
+        /// </summary>
         public ReactiveCommand<Unit, IRoutableViewModel> GoBack { get; }
     }
 }

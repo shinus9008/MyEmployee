@@ -12,6 +12,10 @@ using System.Reflection;
 
 namespace MyEmployee.Client.Wpf
 {
+    /// <summary>
+    /// Конфигурация сервисов. 
+    /// Используюся MS DI.
+    /// </summary>
     public class AppBootstrapper
     {
         /// <summary>
@@ -65,7 +69,7 @@ namespace MyEmployee.Client.Wpf
         }
 
         /// <summary>
-        /// 
+        /// Конфигурация сервисов
         /// </summary>
         /// <param name="serviceCollection"></param>
         private void Configure(IServiceCollection serviceCollection)
@@ -88,7 +92,7 @@ namespace MyEmployee.Client.Wpf
 
             // Вариант #2 ()
             {
-                serviceCollection.AddTransient<IEmployeeCache,      EmployeeCache>();
+                serviceCollection.AddSingleton<IEmployeeCache,      EmployeeCache>();
                 serviceCollection.AddTransient<IEmployeeObservable, LoadEmployeeObservable>();
                 serviceCollection.AddTransient<IEmployeeService,    GrpcEmployeeService>();
             }
@@ -97,8 +101,9 @@ namespace MyEmployee.Client.Wpf
             serviceCollection.AddTransient<LoadingSmaleTask>();
 
 
-            // HTTP and GRPC client registrations
-            serviceCollection.AddGrpcClient<API.WorkerIntegration.WorkerIntegrationClient>(o => o.Address = new("https://basket-api"));
+            // HTTP and GRPC client registrations 
+            //TODO: не заработал через коллекцию надо чегото настраивать
+            //serviceCollection.AddGrpcClient<API.WorkerIntegration.WorkerIntegrationClient>(o => o.Address = new("https://basket-api"));
         }
     }
 }
