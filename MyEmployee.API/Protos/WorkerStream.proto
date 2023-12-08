@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Utis.Minex.WrokerIntegration";
+option csharp_namespace = "MyEmployee.API";
+
+package WorkerIntegration;
 
 service WorkerIntegration {
 	rpc GetWorkerStream (EmptyMessage) returns (stream WorkerAction);
@@ -26,9 +28,9 @@ message WorkerMessage
 	bool HaveChildren = 6;
 }
 
-//Пол
+// для enum Названия полей должны быть уникальны в пределах WorkerIntegration
 enum Sex {
-	Default = 0;
+	sex_Default = 0;
 	Male = 1;
 	Female = 2;
 }
