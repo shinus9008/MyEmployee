@@ -25,4 +25,8 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Protobuf Include="..\MyEmployee.API\Proto\WorkerStream.proto" GrpcServices="Client" />
+	</ItemGroup>
+
 </Project>
