@@ -5,12 +5,80 @@ option csharp_namespace = "MyEmployee.API";
 package WorkerIntegration;
 
 service WorkerIntegration {
+
+	// Используется для мониторинга изменений (синхронизации)
 	rpc GetWorkerStream (EmptyMessage) returns (stream WorkerAction);
+
+	// Запрашиваем всех работников
+	rpc GetEmployeeStream(EmptyMessage) returns (stream EmployeeReply);
+
+	// Создать нового работника
+	rpc CreateEmployee(CreateEmployeeRequest) returns (EmployeeReply);
+	// Обновить работника
+	rpc UpdateEmployee(UpdateEmployeeRequest) returns (EmployeeReply);
+	// Удалить работника
+	rpc DeleteEmployee(UpdateEmployeeRequest) returns (EmployeeReply);
+
+	// Запрашиваем список работников (постранично)
+	rpc GetEmployeeList(EmployeeListRequest) returns (stream EmployeeListReply);
+	
+}
+
+message CreateEmployeeRequest
+{
+	string LastName = 1;
+	string FirstName = 2;
+	string MiddleName = 3;
+	int64 Birthday = 4;
+	Sex Sex = 5;
+	bool HaveChildren = 6;
+}
+message UpdateEmployeeRequest
+{
+	int32 id = 1;
+	string LastName = 2;
+	string FirstName = 3;
+	string MiddleName = 4;
+	int64 Birthday = 5;
+	Sex Sex = 6;
+	bool HaveChildren = 7;
+}
+message DeleteEmployeeRequest
+{
+	int32 id = 1;
+	string LastName = 2;
+	string FirstName = 3;
+	string MiddleName = 4;
+	int64 Birthday = 5;
+	Sex Sex = 6;
+	bool HaveChildren = 7;
+}
+message EmployeeReply
+{
+	int32 id = 1;
+	string LastName = 2;
+	string FirstName = 3;
+	string MiddleName = 4;
+	int64 Birthday = 5;
+	Sex Sex = 6;
+	bool HaveChildren = 7;
+}
+message EmployeeListRequest
+{
+	int32 PageSize = 1;
+	int32 Offset = 2;		
+}
+message EmployeeListReply
+{
+	int32 Total = 1;
+	repeated EmployeeReply Employes  = 2;
 }
 
 message EmptyMessage
 {
+
 }
+
 
 message WorkerAction
 {
