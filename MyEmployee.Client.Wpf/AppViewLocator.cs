@@ -1,6 +1,4 @@
-﻿using MyEmployee.Client.Wpf.ViewModels;
-using MyEmployee.Client.Wpf.Views;
-using ReactiveUI;
+﻿using ReactiveUI;
 
 namespace MyEmployee.Client.Wpf
 {

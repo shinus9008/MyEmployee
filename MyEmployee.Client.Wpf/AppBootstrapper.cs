@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Observables;
+using MyEmployee.Client.Wpf.ViewModels;
+using MyEmployee.Client.Wpf.Views;
 using ReactiveUI;
 using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,10 @@ namespace MyEmployee.Client.Wpf
         /// </summary>
         public IServiceProvider ServiceProvider { get; private set; }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dependencyResolver"></param>
         public AppBootstrapper(IMutableDependencyResolver? dependencyResolver = null)
         {
             dependencyResolver = dependencyResolver ?? Locator.CurrentMutable;
@@ -63,7 +69,14 @@ namespace MyEmployee.Client.Wpf
         private void Configure(IServiceCollection serviceCollection)
         {
             //
-            serviceCollection.AddSingleton<IScreen, MainViewModel>();
+            serviceCollection.AddSingleton<IScreen, AppShell>();
+            serviceCollection.AddSingleton<IPageProvider, AppPageProvider>();
+
+            //
+            serviceCollection.AddSingleton<EmployeeListViewModel>();
+
+            //TODO: Регистратор через splat чет не заработал
+            serviceCollection.AddTransient<IViewFor<EmployeeListViewModel>, EmployeeListView>();
 
             serviceCollection.AddTransient<IEmployeeCache, FakeEmployeeCache_Static>();
         }

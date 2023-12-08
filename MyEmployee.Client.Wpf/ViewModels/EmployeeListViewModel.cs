@@ -1,5 +1,6 @@
 ﻿using DynamicData;
-using MyEmployee.Client.Wpf.Services;
+using MyEmployee.Client.Wpf.Abstractions;
+using MyEmployee.Client.Wpf.Models;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -10,13 +11,13 @@ namespace MyEmployee.Client.Wpf.ViewModels
 {
     public class EmployeeListViewModel : ViewModelBase
     {
-        FakeEmployeeService fakeEmployeeService = new FakeEmployeeService();
         private readonly ReadOnlyObservableCollection<EmployeeViewModel> _item;
         private readonly IScreen screen;
         private object lifteTime;
 
         public EmployeeListViewModel(            
-            IScreen screen, 
+            IScreen screen,
+            IEmployeeCache employeeObservableCache,
             IScheduler? scheduler = null) 
             : base(screen, "Items")
         {
@@ -24,11 +25,12 @@ namespace MyEmployee.Client.Wpf.ViewModels
             GoToEdit   = ReactiveCommand.CreateFromObservable(() => screen.Router.Navigate.Execute(GetEmployeeValidatebleViewModel()));
             GoToDelete = ReactiveCommand.CreateFromObservable(() => screen.Router.Navigate.Execute(GetEmployeeValidatebleViewModel()));
 
-
-            lifteTime = 
-            fakeEmployeeService.Connect
+            //TODO: Отписаться когда окно закроется
+            lifteTime =
+            employeeObservableCache.Cache
+                 .Connect()
                  .Transform(FactoryMethod)
-                 .ObserveOn(scheduler ?? RxApp.MainThreadScheduler) //TODO: Удобен для тестирования
+                 .ObserveOn(scheduler ?? RxApp.MainThreadScheduler) //TODO: Можно сделать провайдер. 
                  .Bind(out _item)
                  .Subscribe();
             this.screen = screen;
@@ -54,7 +56,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
         {
             return new EmployeeViewModel()
             {
-                Id = model.Id,
+                Id = model.Key,
             };
         }
         private EmployeeValidatebleViewModel GetEmployeeValidatebleViewModel()
@@ -71,10 +73,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
         
     }
 
-    public class EmployeeModel
-    {
-        public int Id { get; set; }
-    }
+   
     public class EmployeeViewModel
     {
         public int Id { get; set; }
