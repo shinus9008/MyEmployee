@@ -60,7 +60,7 @@ namespace MyEmployee.Client.Wpf.Services
             return new EmployeeModel()
             {
                 //TODO: Маппинг
-                Key = 1
+                Key = int.Parse(response.Worker.FirstName)
             };
         }
     }

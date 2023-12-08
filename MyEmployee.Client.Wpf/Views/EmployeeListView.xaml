@@ -31,7 +31,8 @@
         <!--Строка 2: Отображает список сотрудников-->
         <ListBox x:Name="Items" Grid.Row="1" ItemsSource="{Binding Path=Items}" 
                  ScrollViewer.HorizontalScrollBarVisibility="Visible"
-                 ScrollViewer.VerticalScrollBarVisibility="Visible">
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 VirtualizingPanel.IsVirtualizing="True">
             <!--Стиль: Растягивам во всю длину-->
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
@@ -52,7 +53,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="{Binding Path= Id}" />
+                        <TextBlock Grid.Column="0" Text="{Binding Path=Id}" />
 
                         <Button Grid.Column="2" Content="Details"   Height="35" Width="75"/>
                         <Button Grid.Column="3" Content="Edit"   Height="35" Width="75"/>
