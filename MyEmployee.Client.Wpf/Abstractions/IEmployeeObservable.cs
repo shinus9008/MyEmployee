@@ -5,9 +5,9 @@ namespace MyEmployee.Client.Wpf.Abstractions
 {
     /// <summary>
     /// 
-    /// </summary>   
-    public interface IEmployeeCache
+    /// </summary>
+    public interface IEmployeeObservable
     {
-        ISourceCache<EmployeeModel, int> Source { get; }
+        IObservableCache<EmployeeModel, int> ObservableCache { get; }
     }
 }

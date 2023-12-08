@@ -17,7 +17,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
 
         public EmployeeListViewModel(            
             IScreen screen,
-            IEmployeeCache employeeObservableCache,
+            IEmployeeObservable employeeObservableCache,
             IScheduler? scheduler = null) 
             : base(screen, "Items")
         {
@@ -27,7 +27,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
 
             //TODO: Отписаться когда окно закроется
             lifteTime =
-            employeeObservableCache.Cache
+            employeeObservableCache.ObservableCache
                  .Connect()
                  .Transform(FactoryMethod)
                  .ObserveOn(scheduler ?? RxApp.MainThreadScheduler) //TODO: Можно сделать провайдер. 
@@ -35,6 +35,11 @@ namespace MyEmployee.Client.Wpf.ViewModels
                  .Subscribe();
             this.screen = screen;
         }
+
+        /// <summary>
+        /// Обновить список сотрудников
+        /// </summary>
+        public ReactiveCommand<Unit, Unit> Update { get; }
 
         /// <summary>
         /// Навигация на страницу создания

@@ -10,20 +10,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    
     <PackageReference Include="ReactiveUI" Version="19.5.1" />
     <PackageReference Include="ReactiveUI.Fody" Version="19.5.1" />
     <PackageReference Include="ReactiveUI.WPF" Version="19.5.1" />
+	<PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.8.6" />
   </ItemGroup>
 
 	<!--Пакеты для генерация клиента-->
 	<ItemGroup>
 		<PackageReference Include="Google.Protobuf" Version="3.25.1" />
 		<PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
+		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.59.0" />
 		<PackageReference Include="Grpc.Tools" Version="2.59.0">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.8.6" />		
+				
 	</ItemGroup>
 
 	<ItemGroup>

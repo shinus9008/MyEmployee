@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Observables;
+using MyEmployee.Client.Wpf.Services;
+using MyEmployee.Client.Wpf.SmaleTasks;
 using MyEmployee.Client.Wpf.ViewModels;
 using MyEmployee.Client.Wpf.Views;
 using ReactiveUI;
@@ -78,7 +80,25 @@ namespace MyEmployee.Client.Wpf
             //TODO: Регистратор через splat чет не заработал
             serviceCollection.AddTransient<IViewFor<EmployeeListViewModel>, EmployeeListView>();
 
-            serviceCollection.AddTransient<IEmployeeCache, FakeEmployeeCache_Static>();
+            
+            // Вариант #1 (Ленивое заполнение; В памяти)
+            {
+                //serviceCollection.AddTransient<IEmployeeObservable, FakeEmployeeObservable>();
+            }
+
+            // Вариант #2 ()
+            {
+                serviceCollection.AddTransient<IEmployeeCache,      EmployeeCache>();
+                serviceCollection.AddTransient<IEmployeeObservable, LoadEmployeeObservable>();
+                serviceCollection.AddTransient<IEmployeeService,    GrpcEmployeeService>();
+            }
+
+
+            serviceCollection.AddTransient<LoadingSmaleTask>();
+
+
+            // HTTP and GRPC client registrations
+            serviceCollection.AddGrpcClient<API.WorkerIntegration.WorkerIntegrationClient>(o => o.Address = new("https://basket-api"));
         }
     }
 }

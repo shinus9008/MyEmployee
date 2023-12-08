@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyEmployee.Client.Wpf.Services
+namespace MyEmployee.Client.Wpf.Abstractions
 {
-    public class ObservableEmployeeService
+    internal interface IEmployeeSyncronizer
     {
-        
     }
 }
