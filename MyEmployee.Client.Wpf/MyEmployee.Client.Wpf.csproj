@@ -23,6 +23,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="14.8.6" />		
 	</ItemGroup>
 
 	<ItemGroup>
