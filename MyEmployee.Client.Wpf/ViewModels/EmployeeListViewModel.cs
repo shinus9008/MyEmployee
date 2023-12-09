@@ -61,7 +61,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
         {
             return new EmployeeViewModel()
             {
-                Id = model.Key,
+                Id = model.Id,
             };
         }
         private EmployeeValidatebleViewModel GetEmployeeValidatebleViewModel()

@@ -9,29 +9,32 @@ namespace MyEmployee.Client.Wpf.Services
     /// <summary>
     /// Зaгружает данные через Grpc клиент
     /// </summary>
-    public class GrpcEmployeeService : IEmployeeService
+    public class GrpcEmployeeService : IEmployeeService, IDisposable
     {
-        private readonly GrpcEmployeeClient employeeClient;
+        private readonly GrpcChannel channel;
+        private readonly GrpcEmployeeClient client;
 
         public GrpcEmployeeService()
         {
-            this.employeeClient = employeeClient;
+            this.channel = GrpcChannel.ForAddress("https://localhost:7074");
+            this.client = new GrpcEmployeeClient(channel);
+        }
+
+        public void Dispose()
+        {
+            channel.Dispose();
         }
 
         //TODO: Почитать о EnumeratorCancellation
         public async IAsyncEnumerable<EmployeeModel> GetAllEmployes([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            using (var channel = GrpcChannel.ForAddress("https://localhost:7074"))
+            // посылаем пустое сообщение 
+            using (var call = client.GetEmployeeStream(new(), cancellationToken: cancellationToken))
             {
-                var employeeClient = new GrpcEmployeeClient(channel);
+                // получаем поток данных
+                var responseStream = call.ResponseStream;
 
-                // посылаем пустое сообщение
-                var responseData = employeeClient.GetWorkerStream(new(), cancellationToken: cancellationToken);
-
-                // получаем поток сервера
-                var responseStream = responseData.ResponseStream;
-
-                // извлекаем сообщение из потока
+                // Читаем поток
                 while (await responseStream.MoveNext(cancellationToken))
                 {
                     var response = responseStream.Current;
@@ -41,26 +44,39 @@ namespace MyEmployee.Client.Wpf.Services
                         continue;
                     }
 
-                    if (response.ActionType != API.Action.Default)
-                    {
-                        // TODO: Лог!
-                        continue;
-                    }
-
-
                     var result = Mapping(response);
 
                     yield return result;
                 }
             }
         }
+        public async IAsyncEnumerable<EmployeeModel> GetAllEvents([EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            yield break;
+        }
 
+
+
+
+
+
+
+        private EmployeeModel Mapping(EmployeeReply response)
+        {
+            return new EmployeeModel()
+            {
+                //TODO: Маппинг
+                Id          = response.Id,
+                FirstName   = response.FirstName,
+                LastName    = response.LastName,
+            };
+        }
         private EmployeeModel Mapping(WorkerAction response)
         {
             return new EmployeeModel()
             {
                 //TODO: Маппинг
-                Key = int.Parse(response.Worker.FirstName)
+                Id = int.Parse(response.Worker.FirstName)
             };
         }
     }

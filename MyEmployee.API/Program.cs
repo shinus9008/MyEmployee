@@ -1,9 +1,16 @@
 using MyEmployee.API.Services;
+using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
+using MyEmployee.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+
+//
+builder.Services.AddScoped<IEmployeeRepository, FakeEmployeeRepository>();
+
+builder.Services.AddHostedService<EmploeeUpdaterHostedService>();
 
 var app = builder.Build();
 

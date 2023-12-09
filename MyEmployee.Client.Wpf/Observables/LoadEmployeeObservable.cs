@@ -15,24 +15,25 @@ namespace MyEmployee.Client.Wpf.Observables
     public class LoadEmployeeObservable : IEmployeeObservable
     {
         private readonly IEmployeeCache employeeCache;       
-        private readonly LoadingSmaleTask synchronizeAction;
-
+        private readonly LoadingSmaleTask loadingSmaleTask;
+        private readonly SynchroSmaleTask synchroSmaleTask;
 
         /// <inheritdoc/>      
         public IObservableCache<EmployeeModel, int> ObservableCache { get; }
 
         /// <inheritdoc/>  
-        public LoadEmployeeObservable(IEmployeeCache employeeCache, LoadingSmaleTask synchronizeAction)
+        public LoadEmployeeObservable(IEmployeeCache employeeCache, LoadingSmaleTask loadingSmaleTask, SynchroSmaleTask synchroSmaleTask)
         {
-            this.employeeCache = employeeCache;          
-            this.synchronizeAction = synchronizeAction;
+            this.employeeCache    = employeeCache;          
+            this.loadingSmaleTask = loadingSmaleTask;
+            this.synchroSmaleTask = synchroSmaleTask;
 
             // При подписке создается фоновая задача
             // Поидее надо бы какойто планировщик задач, но нет времени)
             this.ObservableCache = CreateBackgroundTask()
                 .AsObservableCache();
         }
- 
+
         private IObservable<IChangeSet<EmployeeModel, int>> CreateBackgroundTask()
         {
             return Observable.Create<IChangeSet<EmployeeModel, int>>(observer =>
@@ -53,10 +54,20 @@ namespace MyEmployee.Client.Wpf.Observables
             });            
         }
 
+        /// <summary>
+        /// Фоновый поток 
+        /// </summary>
+        /// <remarks>
+        /// Выполняет две задачи (последовательно)
+        /// </remarks>
         private async Task BackgroundWorker(
             ISourceCache<EmployeeModel, int> cache, CancellationToken token)
         {
-            await synchronizeAction.DoAsync(token);            
+            // #1 Загружем всех сотрудников в кеш
+            await loadingSmaleTask.DoAsync(token);
+
+            // #2 Синхронизируем кеш
+            await synchroSmaleTask.DoAsync(token);
         }
     }
 }

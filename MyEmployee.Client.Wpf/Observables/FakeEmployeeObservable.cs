@@ -26,7 +26,7 @@ namespace MyEmployee.Client.Wpf.Observables
             {
                 return RxApp.TaskpoolScheduler.ScheduleAsync((sch, token) => BackgroundWorker(cache, token));
             },
-            x => x.Key);
+            x => x.Id);
         }
 
         private async Task BackgroundWorker(
@@ -36,7 +36,7 @@ namespace MyEmployee.Client.Wpf.Observables
             {
                 cache.AddOrUpdate(new EmployeeModel()
                 {
-                    Key = i,
+                    Id = i,
                 });
 
                 // Ждем; Продолжаем уже не в контексе синхронизации окна
