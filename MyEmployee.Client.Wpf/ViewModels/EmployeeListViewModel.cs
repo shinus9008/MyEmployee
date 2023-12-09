@@ -42,8 +42,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
             //TODO: Отписаться когда окно закроется
            
 
-            // Коианды можно выполнять когда выбран элемеент списка!
-            // TODO: и сесли не выполняется другая команда?
+            // Команды можно выполнять, когда выбран элемеент списка!            
             var canInvoke = this.WhenAnyValue(x => x.Selected)
                                 .Select(x => x == null ? false : true);
 

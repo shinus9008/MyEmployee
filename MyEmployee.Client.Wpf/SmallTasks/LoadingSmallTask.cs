@@ -7,12 +7,12 @@ namespace MyEmployee.Client.Wpf.SmaleTasks
     /// <summary>
     /// Загружает с сервера всех работников в кэш
     /// </summary>
-    public class LoadingSmaleTask : ISmaleTask
+    public class LoadingSmallTask : ISmallTask
     {
         private readonly IEmployeeCache cache;
         private readonly IEmployeeService service;
 
-        public LoadingSmaleTask(
+        public LoadingSmallTask(
             IEmployeeCache cache, IEmployeeService service)
         {
             this.cache = cache;

@@ -10,16 +10,16 @@ namespace MyEmployee.Client.Wpf.Observables
     /// </summary>
     public class EmployeeObservable : IEmployeeObservable
     {
-        private readonly LoadingSmaleTask loadingSmaleTask;
-        private readonly SynchroSmaleTask synchroSmaleTask;
+        private readonly LoadingSmallTask loadingSmaleTask;
+        private readonly SynchroSmallTask synchroSmaleTask;
                 
         /// <inheritdoc/>
         public IObservable<IChangeSet<EmployeePoco, int>> Connect { get; }
 
         public EmployeeObservable(
             IEmployeeCache employeeCache, 
-            LoadingSmaleTask loadingSmaleTask, 
-            SynchroSmaleTask synchroSmaleTask)
+            LoadingSmallTask loadingSmaleTask, 
+            SynchroSmallTask synchroSmaleTask)
         {
             this.loadingSmaleTask = loadingSmaleTask;
             this.synchroSmaleTask = synchroSmaleTask;

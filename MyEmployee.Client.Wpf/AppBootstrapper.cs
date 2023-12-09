@@ -98,8 +98,8 @@ namespace MyEmployee.Client.Wpf
             }
 
 
-            serviceCollection.AddTransient<LoadingSmaleTask>();
-            serviceCollection.AddTransient<SynchroSmaleTask>();
+            serviceCollection.AddTransient<LoadingSmallTask>();
+            serviceCollection.AddTransient<SynchroSmallTask>();
 
             // HTTP and GRPC client registrations 
             //TODO: не заработал через коллекцию надо чегото настраивать

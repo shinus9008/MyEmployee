@@ -3,7 +3,7 @@
     /// <summary>
     /// Инфроструктура действия.
     /// </summary>
-    public interface ISmaleTask
+    public interface ISmallTask
     {
         Task DoAsync(CancellationToken token);
     }

@@ -6,12 +6,12 @@ using System.Reactive.Threading.Tasks;
 
 namespace MyEmployee.Client.Wpf.SmaleTasks
 {
-    public class SynchroSmaleTask : ISmaleTask
+    public class SynchroSmallTask : ISmallTask
     {
         private readonly IEmployeeCache   cache;
         private readonly IEmployeeService service;
 
-        public SynchroSmaleTask(IEmployeeCache cache, IEmployeeService service)
+        public SynchroSmallTask(IEmployeeCache cache, IEmployeeService service)
         {
             this.cache = cache;
             this.service = service;
