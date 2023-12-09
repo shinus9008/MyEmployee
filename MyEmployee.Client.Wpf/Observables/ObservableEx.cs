@@ -36,7 +36,7 @@ namespace MyEmployee
                             try
                             {
                                 // Передаем все изменения подписчику
-                                await foreach (var item in service.GetAllEvents(new CancellationToken()))
+                                await foreach (var item in service.GetEvents(token))
                                 {
                                     observer.OnNext(item);                                    
                                 }
@@ -77,6 +77,7 @@ namespace MyEmployee
 
                     try
                     {
+                        // Если кто-то подписался: Запускаем фонувую задачу
                         disposable.Disposable = RxApp.TaskpoolScheduler.ScheduleAsync((sch, token) => backgroundTask(token));
                     }
                     catch (Exception e)
@@ -84,7 +85,12 @@ namespace MyEmployee
                         observer.OnError(e);
                     }
 
-                    return new CompositeDisposable(disposable, Disposable.Create(observer.OnCompleted), cache.Source.Connect().SubscribeSafe(observer));
+                    // Если нет подпичиков вызовиться Disposable
+                    return new CompositeDisposable(
+                        disposable,                                     // Завершаем фонувую задачу
+                        Disposable.Create(observer.OnCompleted),        // Оповещаем подписчиков озавершении? //TODO: может и не надо надо тестить
+                        cache.Source.Connect().SubscribeSafe(observer)  // Отписываемся от кеша 
+                        );
                 })
                 .Publish()
                 .RefCount(1);

@@ -93,7 +93,7 @@ namespace MyEmployee.Client.Wpf
             // Вариант #2 ()
             {
                 serviceCollection.AddSingleton<IEmployeeCache,      EmployeeCache>();
-                serviceCollection.AddTransient<IEmployeeObservable, LoadEmployeeObservable>();
+                serviceCollection.AddTransient<IEmployeeObservable, EmployeeObservable>();
                 serviceCollection.AddTransient<IEmployeeService,    GrpcEmployeeService>();
             }
 

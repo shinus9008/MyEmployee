@@ -22,46 +22,49 @@ namespace MyEmployee.Client.Wpf.Services
         }
 
         /// <inheritdoc/>>  
-        public async IAsyncEnumerable<EmployeeEvent> GetAllEvents([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<EmployeeEvent> GetEvents([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             // получаем объект AsyncDuplexStreamingCall 
-            using (var call = client.GetWorkerStream(cancellationToken: cancellationToken))
+            using var call = client.GetWorkerStream(cancellationToken: cancellationToken);
+
+            // Запускаем задачу ожидания завершения обмна
+            var compliteTask = Task.Run(async () =>
             {
-                try
+                // Ожидаем состояние токена отмена
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    //
-                    while (!cancellationToken.IsCancellationRequested)
+                    // Отправляем сообщение
+                    // Сервер должен подписать нас на получение событий
+                    await call.RequestStream.WriteAsync(new EmptyMessage());
+
+                    // Пинг
+                    await Task.Delay(1000);
+                }
+
+                // TODO: Отправить сообщение поток завершается
+
+                // Отправляем сигнал серверу - поток закрывается
+                await call.RequestStream.CompleteAsync();
+            });
+
+            //
+            while (!compliteTask.IsCompleted)
+            {
+                // Обратный поток не должен прерываться!
+                // Если он пуст (значит чсервер не успел нас зарегистрирвать?)
+                while (await call.ResponseStream.MoveNext(cancellationToken))
+                {
+                    var response = call.ResponseStream.Current;
+                    if (response == null)
                     {
-                        // Отправляем сообщение
-                        // Сервер должен подписать нас на получение событий
-                        await call.RequestStream.WriteAsync(new EmptyMessage());
-
-                        // Обратный поток не должен прерываться!
-                        // Если он пуст (значит чсервер не успел нас зарегистрирвать?)
-                        while (await call.ResponseStream.MoveNext(cancellationToken))
-                        {
-                            var response = call.ResponseStream.Current;
-                            if (response == null)
-                            {
-                                // TODO: Проверка на Null
-                                continue;
-                            }
-
-                            var result = Mapping(response);
-
-                            yield return result;
-                        }
+                        // TODO: Проверка на Null
+                        continue;
                     }
 
+                    var result = Mapping(response);
+
+                    yield return result;
                 }
-                finally
-                {
-                    // завершаем чтение сообщений
-                    await call.RequestStream.CompleteAsync();
-                }
-                // Отправляем сообщение
-                // Сервер должен подписать нас на получение событий
-                await call.RequestStream.WriteAsync(new EmptyMessage());      
             }
         }
         

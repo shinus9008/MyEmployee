@@ -8,9 +8,6 @@ namespace MyEmployee.Client.Wpf.Services
         Task DeleteEmployee(EmployeePoco model);
         Task UpdateEmployee(EmployeePoco model);
         IAsyncEnumerable<EmployeePoco> GetAllEmployes(CancellationToken cancellationToken);
-        IAsyncEnumerable<EmployeeEvent> GetAllEvents(CancellationToken cancellationToken);
+        IAsyncEnumerable<EmployeeEvent> GetEvents(CancellationToken cancellationToken);
     }
-
-
-   
 }

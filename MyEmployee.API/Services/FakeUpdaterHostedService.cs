@@ -1,17 +1,28 @@
 ﻿
+using MyEmployee.API.Models;
 using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
 using MyEmployee.Shared;
+using System.Reactive.Subjects;
 
 namespace MyEmployee.API.Services
 {
-    public class EmploeeUpdaterHostedService : BackgroundService
+    /// <summary>
+    /// Фоновый поток который иметирует обновление базы 
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// Кривая заглушка
+    /// </remarks>
+    public class FakeUpdaterHostedService : BackgroundService
     {
         private readonly IServiceProvider services;
-
-        public EmploeeUpdaterHostedService(IServiceProvider services)
+        private readonly Subject<EmployeeEvent> subject = new Subject<EmployeeEvent>();
+        public FakeUpdaterHostedService(IServiceProvider services)
         {
             this.services = services;            
         }
+
+        public IObservable<EmployeeEvent> Observable => subject;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -22,7 +33,7 @@ namespace MyEmployee.API.Services
                     await DoWork(stoppingToken);
                     await Task.Delay(1000, stoppingToken); 
                 } 
-                catch 
+                catch (Exception ex)
                 { 
                     //TODO: Add loger
                 }
@@ -39,12 +50,15 @@ namespace MyEmployee.API.Services
 
                 while (!stoppingToken.IsCancellationRequested) 
                 {
-
+                    // Запрашиваем данные из репозитория 
+                    // 
                     var model =  await repository.GetRandom();
                     if( model != null)
                     {
+                        // Изменяемих
                         model.FirstName = RandomHelper.RandomString(10);
 
+                        // Обновили базу данных
                         await repository.UpdateAsync(model);
                     }
 

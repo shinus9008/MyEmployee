@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using DynamicData.Binding;
 using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Models;
 using MyEmployee.Client.Wpf.Services;
@@ -8,13 +9,16 @@ using ReactiveUI.Fody.Helpers;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace MyEmployee.Client.Wpf.ViewModels
 {
-    public class EmployeeListViewModel : ViewModelBase
+    public class EmployeeListViewModel : ViewModelBase, IActivatableViewModel
     {
-        private readonly ReadOnlyObservableCollection<EmployeeProxy> _item;      
+        private ReadOnlyObservableCollection<EmployeeProxy> _item;
+
+        public ViewModelActivator Activator { get; } = new();
 
         public EmployeeListViewModel(            
             IScreen screen,
@@ -23,14 +27,20 @@ namespace MyEmployee.Client.Wpf.ViewModels
             IScheduler? scheduler = null) 
             : base(screen, "Items")
         {
+            
+            this.WhenActivated(disposable =>
+            {
+                employeeObservableCache.Connect
+               .Transform(model => new EmployeeProxy(model))
+               .Sort(SortExpressionComparer<EmployeeProxy>.Ascending(t => t.Id))
+               .ObserveOn(scheduler ?? RxApp.MainThreadScheduler) //TODO: Можно сделать провайдер. 
+               .Bind(out _item)
+               .DisposeMany()
+               .Subscribe()
+               .DisposeWith(disposable);
+            });
             //TODO: Отписаться когда окно закроется
-            var lifteTime =
-            employeeObservableCache.Connect                               
-                 .Transform(model => new EmployeeProxy(model)) 
-                 .ObserveOn(scheduler ?? RxApp.MainThreadScheduler) //TODO: Можно сделать провайдер. 
-                 .Bind(out _item)
-                 .DisposeMany()
-                 .Subscribe();
+           
 
             // Коианды можно выполнять когда выбран элемеент списка!
             // TODO: и сесли не выполняется другая команда?
@@ -46,10 +56,9 @@ namespace MyEmployee.Client.Wpf.ViewModels
                 // 
                 var model = new EmployeePoco()
                 {
-                    FirstName = RandomHelper.RandomString(10),
-                    LastName  = RandomHelper.RandomString(10),
-                };
-                await Task.Delay(5000);
+                    FirstName = "Create " + RandomHelper.RandomString(3),
+                    LastName  = RandomHelper.RandomString(3),
+                };                
 
                 await employeeService.CreateEmployee(model).ConfigureAwait(true);
 
@@ -60,8 +69,8 @@ namespace MyEmployee.Client.Wpf.ViewModels
             {
                 // 
                 var model = Selected!.model;
-                model.FirstName = RandomHelper.RandomString(10);
-                model.LastName = RandomHelper.RandomString(10);
+                model.FirstName = "Edit " + RandomHelper.RandomString(6);
+                model.LastName  = RandomHelper.RandomString(6);
 
                 await employeeService.UpdateEmployee(model).ConfigureAwait(true);
 
@@ -102,5 +111,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
         /// 
         /// </summary>
         public ReadOnlyObservableCollection<EmployeeProxy> Items => _item;
+
+        
     }
 }

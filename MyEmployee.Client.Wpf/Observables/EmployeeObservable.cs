@@ -8,7 +8,7 @@ namespace MyEmployee.Client.Wpf.Observables
     /// <summary>
     /// При первом запуске (подписке) запускает фоновую зачачу
     /// </summary>
-    public class LoadEmployeeObservable : IEmployeeObservable
+    public class EmployeeObservable : IEmployeeObservable
     {
         private readonly LoadingSmaleTask loadingSmaleTask;
         private readonly SynchroSmaleTask synchroSmaleTask;
@@ -16,7 +16,7 @@ namespace MyEmployee.Client.Wpf.Observables
         /// <inheritdoc/>
         public IObservable<IChangeSet<EmployeePoco, int>> Connect { get; }
 
-        public LoadEmployeeObservable(
+        public EmployeeObservable(
             IEmployeeCache employeeCache, 
             LoadingSmaleTask loadingSmaleTask, 
             SynchroSmaleTask synchroSmaleTask)

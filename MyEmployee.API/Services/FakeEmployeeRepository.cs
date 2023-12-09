@@ -1,15 +1,30 @@
-﻿using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
+﻿using MyEmployee.API.Models;
+using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
+using MyEmployee.Shared;
 using System.Collections.Concurrent;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace MyEmployee.Infrastructure.Repositories
 {
-    public class FakeEmployeeRepository : IEmployeeRepository
+    /// <summary>
+    /// ЗАглушка.. сохраняет и отправляет уведомления
+    /// </summary>
+    public class FakeEmployeeRepository : IEmployeeRepository, IEmployeeEventObservable
     {
         public  static Random random = new Random();
         public  static ConcurrentDictionary<int, EmployeeModel> data = new ConcurrentDictionary<int, EmployeeModel>();
         private static volatile int _counter;
         private static object _locker = new object();
-        
+
+
+        private static Subject<EmployeeEvent> subject = new Subject<EmployeeEvent>();
+
+        public IObservable<EmployeeEvent> Observable => subject.Synchronize(subject);
+
+        /// <summary>
+        /// Заполняет репозиторий данными
+        /// </summary>
         static FakeEmployeeRepository()
         {
             _counter = 10;
@@ -26,31 +41,38 @@ namespace MyEmployee.Infrastructure.Repositories
                     HaveChildren  = false,
                 });
             }
-
-           
         }
 
         public Task CreateAsync(EmployeeModel mode)
         {
-            
             return Task.Run(() =>
             {
                 lock (_locker) 
                 {
+                    mode.Id = _counter++;
                     data.TryAdd(_counter, mode);
-                    _counter++;
                 }
-            });
-        }
 
-        public Task DeleteAsync(EmployeeModel model)
-        {
-            return Task.Run(() => data.Remove(model.Id, out EmployeeModel? value));
+                Notify(EmployeeEventType.Create, mode);
+            });
         }
 
         public Task UpdateAsync(EmployeeModel model)
         {
-            return Task.Run(() => data.AddOrUpdate(model.Id, model, (i, m) => m));            
+            return Task.Run(() =>
+            {
+                data.AddOrUpdate(model.Id, model, (i, m) => m);
+                Notify(EmployeeEventType.Update, model);
+            });            
+        }
+
+        public Task DeleteAsync(EmployeeModel model)
+        {
+            return Task.Run(() =>
+            {
+                data.Remove(model.Id, out EmployeeModel? value);
+                Notify(EmployeeEventType.Delete, model);
+            });
         }
 
         public async IAsyncEnumerable<EmployeeModel> GetAllAsync()
@@ -79,5 +101,20 @@ namespace MyEmployee.Infrastructure.Repositories
         }
 
        
+        // TODO: Реализовать как
+        private void Notify(EmployeeEventType employeeEventType, EmployeeModel model)
+        {
+            // Оповестили о изменении всех подпичиков
+            subject.OnNext(new EmployeeEvent()
+            {
+                Action = employeeEventType,
+                Employee = new EmployeePoco()
+                {
+                    FirstName = model.FirstName,
+                    LastName  = model.LastName,
+                    Id        = model.Id,
+                }
+            });
+        }
     }
 }
