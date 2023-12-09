@@ -1,8 +1,6 @@
 ﻿using DynamicData;
 using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Models;
-using ReactiveUI;
-using System.Reactive.Concurrency;
 
 namespace MyEmployee.Client.Wpf.Observables
 {
@@ -11,30 +9,23 @@ namespace MyEmployee.Client.Wpf.Observables
     /// </summary>
     public class FakeEmployeeObservable : IEmployeeObservable
     {
-        /// <inheritdoc/>     
-        public IObservableCache<EmployeeModel, int> ObservableCache { get; }
+        private readonly IEmployeeCache employeeCache;
 
-        public FakeEmployeeObservable()
+        /// <inheritdoc/>
+        public IObservable<IChangeSet<EmployeeModel, int>> Connect { get; }
+
+        public FakeEmployeeObservable(IEmployeeCache employeeCache)
         {
-            this.ObservableCache = 
-                CreateBackgroundTask().AsObservableCache();
+            this.Connect = employeeCache
+                .GetObservableEmployee(BackgroundWorker);
+            this.employeeCache = employeeCache;
         }
 
-        private IObservable<IChangeSet<EmployeeModel, int>> CreateBackgroundTask()
-        {
-            return ObservableChangeSet.Create<EmployeeModel, int>(cache =>
-            {
-                return RxApp.TaskpoolScheduler.ScheduleAsync((sch, token) => BackgroundWorker(cache, token));
-            },
-            x => x.Id);
-        }
-
-        private async Task BackgroundWorker(
-          ISourceCache<EmployeeModel, int> cache, CancellationToken token)
+        private async Task BackgroundWorker(CancellationToken token)
         {
             for (int i = 0; i < 1000; i++)
             {
-                cache.AddOrUpdate(new EmployeeModel()
+                employeeCache.Source.AddOrUpdate(new EmployeeModel()
                 {
                     Id = i,
                 });

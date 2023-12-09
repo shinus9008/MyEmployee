@@ -10,14 +10,15 @@ namespace MyEmployee.Client.Wpf
     /// </summary>
     public partial class App : Application
     {
-        //TODO: ДОбавить обработчик исключений!
-
-        //TODO: ДОбавить обработчик исключений при навигации!
-
         public App()
         {
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
+        }
 
-        }        
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            //TODO: Фатальная ошибка
+        }
     }
 
 }

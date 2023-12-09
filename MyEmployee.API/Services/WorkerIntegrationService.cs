@@ -1,14 +1,11 @@
 ﻿using Grpc.Core;
 using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
 using System.Collections.Concurrent;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace MyEmployee.API.Services
 {
     public class WorkerIntegrationService: WorkerIntegration.WorkerIntegrationBase
     {
-        IObservable<WorkerAction> observable = new Subject<WorkerAction>();
         private readonly IEmployeeRepository employeeRepository;
 
         public WorkerIntegrationService(
@@ -17,18 +14,7 @@ namespace MyEmployee.API.Services
             this.employeeRepository = employeeRepository;
         }
 
-        //public override async Task SetWorkerStream(
-        //    IAsyncStreamReader <EmptyMessage> requestStream, 
-        //    IServerStreamWriter<WorkerAction> responseStream, 
-        //    ServerCallContext context)
-        //{
-        //    // Клиент подключился
-        //    // Пока клиент не завершит передачу подключение сохраняется
-        //    await foreach (var message in requestStream.ReadAllAsync()) 
-        //    { 
-
-        //    }
-        //}
+        // TODO: Авторизаййия и аутентификация не настроенв
 
         public override Task GetEmployeeList(EmployeeListRequest request, IServerStreamWriter<EmployeeListReply> responseStream, ServerCallContext context)
         {
@@ -43,21 +29,72 @@ namespace MyEmployee.API.Services
                 await responseStream.WriteAsync(dto);
             }
         }
-        public override Task<EmployeeReply> CreateEmployee(CreateEmployeeRequest request, ServerCallContext context)
+        
+        /* 
+         * Работают напрямую с репозиторем. Разделение на команд чтения записи не делал
+         */        
+        public override async Task<EmployeeReply> CreateEmployee(CreateEmployeeRequest request, ServerCallContext context)
         {
-            // 
-            return base.CreateEmployee(request, context);
+            var mode = Mapping(request);
+
+            await employeeRepository.CreateAsync(mode);
+
+            // TODO: Ответ
+            return new EmployeeReply();
+
+            EmployeeModel Mapping(CreateEmployeeRequest request)
+            {
+                return new EmployeeModel()
+                {
+                    FirstName = request.FirstName,
+                    LastName  = request.LastName,
+                };
+            }
         }
-        public override Task<EmployeeReply> UpdateEmployee(UpdateEmployeeRequest request, ServerCallContext context)
+        public override async Task<EmployeeReply> UpdateEmployee(UpdateEmployeeRequest request, ServerCallContext context)
         {
-            // 
-            return base.UpdateEmployee(request, context);
+            var mode = Mapping(request);
+
+            await employeeRepository.CreateAsync(mode);
+
+            // TODO: Ответ
+            return new EmployeeReply();
+
+            EmployeeModel Mapping(UpdateEmployeeRequest request)
+            {
+                //TOOD: Должна находить в базе данных по ID обновлять свойства и сохранять если это через орм!
+                return new EmployeeModel()
+                {
+                    Id = request.Id,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                };
+            }
         }
-        public override Task<EmployeeReply> DeleteEmployee(UpdateEmployeeRequest request, ServerCallContext context)
+        public override async Task<EmployeeReply> DeleteEmployee(DeleteEmployeeRequest request, ServerCallContext context)
         {
-            // 
-            return base.DeleteEmployee(request, context);
+            var mode = Mapping(request);
+
+            await employeeRepository.CreateAsync(mode);
+
+            // TODO: Ответ
+            return new EmployeeReply();
+
+            EmployeeModel Mapping(DeleteEmployeeRequest request)
+            {
+                //TOOD: Должна находить в базе данных по ID обновлять свойства и сохранять если это через орм!
+                return new EmployeeModel()
+                {
+                    Id = request.Id,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                };
+            }
         }
+
+        /* 
+         * 
+         */
         public override async Task GetWorkerStream(EmptyMessage request, IServerStreamWriter<WorkerAction> responseStream, ServerCallContext context)
         {
             // Возвращает всех 
@@ -68,8 +105,9 @@ namespace MyEmployee.API.Services
         }
 
 
-
-
+        
+       
+        
 
 
 

@@ -1,5 +1,9 @@
-﻿using MyEmployee.Client.Wpf.Abstractions;
+﻿using DynamicData;
+using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Services;
+using ReactiveUI;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 
 namespace MyEmployee.Client.Wpf.SmaleTasks
 {
@@ -14,24 +18,42 @@ namespace MyEmployee.Client.Wpf.SmaleTasks
             this.service = service;
         }
 
-        public async Task DoAsync(CancellationToken token)
+        public Task DoAsync(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
-            {
-                try
+            // Слушаем все сообщения 
+            // Бкферизируем
+            // Обновляем кеш
+            return service
+                .GetObservableEmployeeEvent()
+                .Buffer(TimeSpan.FromMilliseconds(100), RxApp.TaskpoolScheduler)
+                .Where(x => x.Count != 0)
+                .Do(items =>
                 {
-                    await InternalAsync(token);
-                }
-                catch (Exception ex)
-                {
-                    //TODO: Add logger
-                }
-            }
-        }
-
-        private async Task InternalAsync(CancellationToken token)
-        {
-            
+                    cache.Source.Edit(edit =>
+                    {
+                        foreach (var item in items)
+                        {
+                            if(item != null)
+                            {
+                                switch (item.Action)
+                                {
+                                    //TODO:Улучшить!
+                                    case Models.Action.Update:
+                                    case Models.Action.New:
+                                        edit.AddOrUpdate(item.Employee); 
+                                        break;
+                                    case Models.Action.Delete:
+                                        edit.RemoveKey(item.Employee.Id);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }                                           
+                        }
+                    });
+                })
+                .RunAsync(token)
+                .ToTask();
         }
     }
 }

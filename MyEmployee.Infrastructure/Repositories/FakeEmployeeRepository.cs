@@ -5,12 +5,15 @@ namespace MyEmployee.Infrastructure.Repositories
 {
     public class FakeEmployeeRepository : IEmployeeRepository
     {
-        public static Random random = new Random();
-        public static ConcurrentDictionary<int, EmployeeModel> data = new ConcurrentDictionary<int, EmployeeModel>();
+        public  static Random random = new Random();
+        public  static ConcurrentDictionary<int, EmployeeModel> data = new ConcurrentDictionary<int, EmployeeModel>();
+        private static volatile int _counter;
+        private static object _locker = new object();
         
         static FakeEmployeeRepository()
         {
-            for (int i = 0; i < 10_000; i++) 
+            _counter = 10;
+            for (int i = 0; i < _counter; i++) 
             {
                 data.TryAdd(i, new EmployeeModel
                 {
@@ -23,6 +26,31 @@ namespace MyEmployee.Infrastructure.Repositories
                     HaveChildren  = false,
                 });
             }
+
+           
+        }
+
+        public Task CreateAsync(EmployeeModel mode)
+        {
+            
+            return Task.Run(() =>
+            {
+                lock (_locker) 
+                {
+                    data.TryAdd(_counter, mode);
+                    _counter++;
+                }
+            });
+        }
+
+        public Task DeleteAsync(EmployeeModel model)
+        {
+            return Task.Run(() => data.Remove(model.Id, out EmployeeModel? value));
+        }
+
+        public Task UpdateAsync(EmployeeModel model)
+        {
+            return Task.Run(() => data.AddOrUpdate(model.Id, model, (i, m) => m));            
         }
 
         public async IAsyncEnumerable<EmployeeModel> GetAllAsync()
@@ -50,11 +78,6 @@ namespace MyEmployee.Infrastructure.Repositories
             return Task.FromResult(result);
         }
 
-        public Task UpdateAsync(EmployeeModel model)
-        {
-            data.AddOrUpdate(model.Id, model, (i, m) => m);
-
-            return Task.CompletedTask;
-        }
+       
     }
 }

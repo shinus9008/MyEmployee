@@ -1,6 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using System.Diagnostics;
+using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Windows.Forms;
 
 namespace MyEmployee.Client.Wpf
 {
@@ -15,11 +19,20 @@ namespace MyEmployee.Client.Wpf
         {
             InitializeComponent();
 
+            RxApp.DefaultExceptionHandler = Observer.Create(delegate (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+            });
+
             // Иницилизируем DI
             AppBootstrapper = new AppBootstrapper();
 
             // Получаем главную View
             ViewModel       = AppBootstrapper.ServiceProvider.GetService<IScreen>() as AppShell; //TODO: Сделать красиво!
+
+            
+           
 
 
             this.WhenActivated(disposables =>
@@ -31,6 +44,8 @@ namespace MyEmployee.Client.Wpf
                     .DisposeWith(disposables);
                 this.BindCommand(ViewModel, x => x.GoBack, x => x.GoBackButton)
                     .DisposeWith(disposables);
+
+               
             });
         }
     }

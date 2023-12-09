@@ -17,7 +17,7 @@ service WorkerIntegration {
 	// Обновить работника
 	rpc UpdateEmployee(UpdateEmployeeRequest) returns (EmployeeReply);
 	// Удалить работника
-	rpc DeleteEmployee(UpdateEmployeeRequest) returns (EmployeeReply);
+	rpc DeleteEmployee(DeleteEmployeeRequest) returns (EmployeeReply);
 
 	// Запрашиваем список работников (постранично)
 	rpc GetEmployeeList(EmployeeListRequest) returns (stream EmployeeListReply);

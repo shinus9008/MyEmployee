@@ -28,6 +28,9 @@
 		</PackageReference>
 				
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MyEmployee.Shared\MyEmployee.Shared.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Protobuf Include="..\MyEmployee.API\Proto\WorkerStream.proto" GrpcServices="Client" />

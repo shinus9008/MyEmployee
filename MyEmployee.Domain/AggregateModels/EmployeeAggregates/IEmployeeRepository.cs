@@ -7,6 +7,8 @@ namespace MyEmployee.Domain.AggregateModels.EmployeeAggregates
         IAsyncRepositoryReader<EmployeeModel>,
         IRandomModelAccess<EmployeeModel>
     {
+        Task CreateAsync(EmployeeModel mode);
         Task UpdateAsync(EmployeeModel model);
+        Task DeleteAsync(EmployeeModel model);
     }
 }

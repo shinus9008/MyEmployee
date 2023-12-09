@@ -1,19 +1,6 @@
 ﻿using MyEmployee.Client.Wpf.ViewModels;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Reactive.Disposables;
 
 namespace MyEmployee.Client.Wpf.Views
 {
@@ -28,6 +15,14 @@ namespace MyEmployee.Client.Wpf.Views
             this.WhenActivated(disposables =>
             {
                 DataContext = ViewModel;
+
+                // Когда вюшка создается привязываем свойства
+                this.BindCommand(ViewModel, x => x.GoToCreate, x => x.GoToCreateButton)
+                    .DisposeWith(disposables);
+                this.BindCommand(ViewModel, x => x.GoToEdit, x => x.GoToEditButton)
+                    .DisposeWith(disposables);
+                this.BindCommand(ViewModel, x => x.GoToDelete, x => x.GoToDeleteButton)
+                    .DisposeWith(disposables);
             });
         }
     }
