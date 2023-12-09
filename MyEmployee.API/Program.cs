@@ -1,6 +1,8 @@
+using MyEmployee.API.Gprc;
 using MyEmployee.API.Services;
 using MyEmployee.Domain.AggregateModels.EmployeeAggregates;
 using MyEmployee.Infrastructure.Repositories;
+using MyEmployee.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,9 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 
 //
-builder.Services.AddScoped<IEmployeeRepository, FakeEmployeeRepository>();
+builder.Services.AddSingleton<FakeEmployeeRepository>();
+builder.Services.AddSingleton<IEmployeeRepository>(sp => sp.GetService<FakeEmployeeRepository>()!);
+builder.Services.AddSingleton<IEmployeeEventObservable>(sp => sp.GetService<FakeEmployeeRepository>()!);
 
-builder.Services.AddHostedService<EmploeeUpdaterHostedService>();
+builder.Services.AddHostedService<FakeUpdaterHostedService>();
 
 var app = builder.Build();
 

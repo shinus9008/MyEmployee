@@ -36,7 +36,7 @@ namespace MyEmployee
                             try
                             {
                                 // Передаем все изменения подписчику
-                                await foreach (var item in service.GetAllEvents(new CancellationToken()))
+                                await foreach (var item in service.GetAllEvents(token))
                                 {
                                     observer.OnNext(item);                                    
                                 }
@@ -84,7 +84,15 @@ namespace MyEmployee
                         observer.OnError(e);
                     }
 
-                    return new CompositeDisposable(disposable, Disposable.Create(observer.OnCompleted), cache.Source.Connect().SubscribeSafe(observer));
+                    return new CompositeDisposable(
+                        disposable, 
+                        Disposable.Create(observer.OnCompleted), 
+                        cache.Source.Connect().SubscribeSafe(observer),
+                        Disposable.Create(() =>
+                        {
+
+                        })
+                        );
                 })
                 .Publish()
                 .RefCount(1);
