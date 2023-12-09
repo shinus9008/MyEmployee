@@ -4,10 +4,10 @@ namespace MyEmployee.Client.Wpf.Services
 {
     public interface IEmployeeService
     {
-        Task CreateEmployee(EmployeeModel model);
-        Task DeleteEmployee(EmployeeModel model);
-        Task UpdateEmployee(EmployeeModel model);
-        IAsyncEnumerable<EmployeeModel> GetAllEmployes(CancellationToken cancellationToken);
+        Task CreateEmployee(EmployeePoco model);
+        Task DeleteEmployee(EmployeePoco model);
+        Task UpdateEmployee(EmployeePoco model);
+        IAsyncEnumerable<EmployeePoco> GetAllEmployes(CancellationToken cancellationToken);
         IAsyncEnumerable<EmployeeEvent> GetAllEvents(CancellationToken cancellationToken);
     }
 

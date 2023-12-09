@@ -14,7 +14,7 @@ namespace MyEmployee.Client.Wpf.Observables
         private readonly SynchroSmaleTask synchroSmaleTask;
                 
         /// <inheritdoc/>
-        public IObservable<IChangeSet<EmployeeModel, int>> Connect { get; }
+        public IObservable<IChangeSet<EmployeePoco, int>> Connect { get; }
 
         public LoadEmployeeObservable(
             IEmployeeCache employeeCache, 

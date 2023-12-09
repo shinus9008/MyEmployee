@@ -5,9 +5,9 @@ namespace MyEmployee.Client.Wpf.ViewModels
     //TODO: Тут реализовать Валидацию
     public class EmployeeProxy
     {
-        internal readonly EmployeeModel model;
+        internal readonly EmployeePoco model;
 
-        public EmployeeProxy(EmployeeModel model)
+        public EmployeeProxy(EmployeePoco model)
         {
             this.model = model;
         }

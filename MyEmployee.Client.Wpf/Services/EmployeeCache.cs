@@ -9,7 +9,7 @@ namespace MyEmployee.Client.Wpf.Observables
     /// </summary>
     public class EmployeeCache : IEmployeeCache
     {
-        public ISourceCache<EmployeeModel, int> Source { get; } 
-            = new SourceCache<EmployeeModel, int>(x => x.Id);
+        public ISourceCache<EmployeePoco, int> Source { get; } 
+            = new SourceCache<EmployeePoco, int>(x => x.Id);
     }
 }

@@ -12,7 +12,7 @@ namespace MyEmployee.Client.Wpf.Observables
         private readonly IEmployeeCache employeeCache;
 
         /// <inheritdoc/>
-        public IObservable<IChangeSet<EmployeeModel, int>> Connect { get; }
+        public IObservable<IChangeSet<EmployeePoco, int>> Connect { get; }
 
         public FakeEmployeeObservable(IEmployeeCache employeeCache)
         {
@@ -25,7 +25,7 @@ namespace MyEmployee.Client.Wpf.Observables
         {
             for (int i = 0; i < 1000; i++)
             {
-                employeeCache.Source.AddOrUpdate(new EmployeeModel()
+                employeeCache.Source.AddOrUpdate(new EmployeePoco()
                 {
                     Id = i,
                 });

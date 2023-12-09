@@ -2,13 +2,17 @@
 {
     public class EmployeeEvent
     {
-        public Action Action { get; set; }
-        public EmployeeModel Employee { get; set; }
+        public EmployeeEventAction Action { get; }
+        public EmployeePoco Employee { get; }
+        public EmployeeEvent(EmployeePoco employee, EmployeeEventAction action)
+        {
+            Employee = employee;
+            Action = action;
+        }
     }
-    public enum Action
+    public enum EmployeeEventAction
     {
-        New,
-        Update,
+        UpdateOrCreate,
         Delete
     }
 }

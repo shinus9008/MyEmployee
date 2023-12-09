@@ -4,10 +4,12 @@ option csharp_namespace = "MyEmployee.API";
 
 package WorkerIntegration;
 
+//Файл помеенял: но индексы не резервировал!
+
 service WorkerIntegration {
 
 	// Используется для мониторинга изменений (синхронизации)
-	rpc GetWorkerStream (EmptyMessage) returns (stream WorkerAction);
+	rpc GetWorkerStream (stream EmptyMessage) returns (stream WorkerAction);
 
 	// Запрашиваем всех работников
 	rpc GetEmployeeStream(EmptyMessage) returns (stream EmployeeReply);
@@ -82,18 +84,8 @@ message EmptyMessage
 
 message WorkerAction
 {
-	WorkerMessage worker = 1;
+	EmployeeReply worker = 1;
 	Action actionType = 2;
-}
-
-message WorkerMessage
-{
-	string LastName = 1;
-	string FirstName = 2;
-	string MiddleName = 3;
-	int64 Birthday = 4;
-	Sex Sex = 5;
-	bool HaveChildren = 6;
 }
 
 // для enum Названия полей должны быть уникальны в пределах WorkerIntegration

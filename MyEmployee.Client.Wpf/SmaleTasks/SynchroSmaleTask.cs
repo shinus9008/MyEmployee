@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using MyEmployee.Client.Wpf.Abstractions;
+﻿using MyEmployee.Client.Wpf.Abstractions;
 using MyEmployee.Client.Wpf.Services;
 using ReactiveUI;
 using System.Reactive.Linq;
@@ -29,29 +28,35 @@ namespace MyEmployee.Client.Wpf.SmaleTasks
                 .Where(x => x.Count != 0)
                 .Do(items =>
                 {
-                    cache.Source.Edit(edit =>
+                    //TODO: Забыл как ловить исключения в Щиукмфиду
+                    try
                     {
-                        foreach (var item in items)
+                        cache.Source.Edit(edit =>
                         {
-                            if(item != null)
+                            foreach (var item in items)
                             {
-                                switch (item.Action)
+                                if (item != null)
                                 {
-                                    //TODO:Улучшить!
-                                    case Models.Action.Update:
-                                    case Models.Action.New:
-                                        edit.AddOrUpdate(item.Employee); 
-                                        break;
-                                    case Models.Action.Delete:
-                                        edit.RemoveKey(item.Employee.Id);
-                                        break;
-                                    default:
-                                        break;
+                                    switch (item.Action)
+                                    {
+                                        //TODO:Улучшить!
+                                        case Models.EmployeeEventAction.UpdateOrCreate:                                       
+                                            edit.AddOrUpdate(item.Employee);
+                                            break;
+                                        case Models.EmployeeEventAction.Delete:
+                                            edit.RemoveKey(item.Employee.Id);
+                                            break;
+                                        default:
+                                            break;
+                                    }
                                 }
-                            }                                           
-                        }
-                    });
-                })
+                            }
+                        });
+                    }
+                    catch (Exception)
+                    {                      
+                    }
+                })                
                 .RunAsync(token)
                 .ToTask();
         }

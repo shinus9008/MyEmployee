@@ -8,6 +8,6 @@ namespace MyEmployee.Client.Wpf.Abstractions
     /// </summary>   
     public interface IEmployeeCache
     {
-        ISourceCache<EmployeeModel, int> Source { get; }
+        ISourceCache<EmployeePoco, int> Source { get; }
     }
 }

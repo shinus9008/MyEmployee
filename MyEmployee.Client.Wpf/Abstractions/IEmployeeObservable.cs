@@ -8,6 +8,6 @@ namespace MyEmployee.Client.Wpf.Abstractions
     /// </summary>
     public interface IEmployeeObservable
     {
-        IObservable<IChangeSet<EmployeeModel, int>> Connect { get; }        
+        IObservable<IChangeSet<EmployeePoco, int>> Connect { get; }        
     }
 }

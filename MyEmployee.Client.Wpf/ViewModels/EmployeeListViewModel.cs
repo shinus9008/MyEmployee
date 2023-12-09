@@ -44,7 +44,7 @@ namespace MyEmployee.Client.Wpf.ViewModels
             GoToCreate = ReactiveCommand.CreateFromTask(async () =>
             {
                 // 
-                var model = new EmployeeModel()
+                var model = new EmployeePoco()
                 {
                     FirstName = RandomHelper.RandomString(10),
                     LastName  = RandomHelper.RandomString(10),

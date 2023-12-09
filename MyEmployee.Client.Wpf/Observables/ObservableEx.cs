@@ -61,7 +61,7 @@ namespace MyEmployee
         /// <param name="backgroundTask"></param>
         /// <param name="scheduler"></param>
         /// <returns></returns>
-        public static IObservable<IChangeSet<EmployeeModel, int>> GetObservableEmployee(
+        public static IObservable<IChangeSet<EmployeePoco, int>> GetObservableEmployee(
             this IEmployeeCache cache, 
             Func<CancellationToken,Task> backgroundTask,  
             IScheduler? scheduler = null)
@@ -71,7 +71,7 @@ namespace MyEmployee
                 scheduler = RxApp.TaskpoolScheduler;
 
             return Observable
-                .Create<IChangeSet<EmployeeModel, int>>(observer =>
+                .Create<IChangeSet<EmployeePoco, int>>(observer =>
                 {
                     var disposable = new SingleAssignmentDisposable();
 

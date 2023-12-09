@@ -24,31 +24,49 @@ namespace MyEmployee.Client.Wpf.Services
         /// <inheritdoc/>>  
         public async IAsyncEnumerable<EmployeeEvent> GetAllEvents([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            // посылаем пустое сообщение 
-            using (var call = client.GetEmployeeStream(new(), cancellationToken: cancellationToken))
+            // получаем объект AsyncDuplexStreamingCall 
+            using (var call = client.GetWorkerStream(cancellationToken: cancellationToken))
             {
-                // получаем поток данных
-                var responseStream = call.ResponseStream;
-
-                // Читаем поток
-                while (await responseStream.MoveNext(cancellationToken))
+                try
                 {
-                    var response = responseStream.Current;
-                    if (response == null)
+                    //
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        // TODO: Проверка на Null
-                        continue;
+                        // Отправляем сообщение
+                        // Сервер должен подписать нас на получение событий
+                        await call.RequestStream.WriteAsync(new EmptyMessage());
+
+                        // Обратный поток не должен прерываться!
+                        // Если он пуст (значит чсервер не успел нас зарегистрирвать?)
+                        while (await call.ResponseStream.MoveNext(cancellationToken))
+                        {
+                            var response = call.ResponseStream.Current;
+                            if (response == null)
+                            {
+                                // TODO: Проверка на Null
+                                continue;
+                            }
+
+                            var result = Mapping(response);
+
+                            yield return result;
+                        }
                     }
 
-                    var result = Mapping(response);
-
-                    yield return new EmployeeEvent();
                 }
+                finally
+                {
+                    // завершаем чтение сообщений
+                    await call.RequestStream.CompleteAsync();
+                }
+                // Отправляем сообщение
+                // Сервер должен подписать нас на получение событий
+                await call.RequestStream.WriteAsync(new EmptyMessage());      
             }
         }
         
         /// <inheritdoc/>>  
-        public async IAsyncEnumerable<EmployeeModel> GetAllEmployes([EnumeratorCancellation] CancellationToken cancellationToken)
+        public async IAsyncEnumerable<EmployeePoco> GetAllEmployes([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             // посылаем пустое сообщение 
             using (var call = client.GetEmployeeStream(new(), cancellationToken: cancellationToken))
@@ -74,7 +92,7 @@ namespace MyEmployee.Client.Wpf.Services
         }
 
         /// <inheritdoc/>>  
-        public async Task CreateEmployee(EmployeeModel model)
+        public async Task CreateEmployee(EmployeePoco model)
         {
             try
             {
@@ -93,7 +111,7 @@ namespace MyEmployee.Client.Wpf.Services
             }
 
 
-            CreateEmployeeRequest MappingToCreateRequest(EmployeeModel model)
+            CreateEmployeeRequest MappingToCreateRequest(EmployeePoco model)
             {
                 return new CreateEmployeeRequest()
                 {
@@ -104,7 +122,7 @@ namespace MyEmployee.Client.Wpf.Services
         }
 
         /// <inheritdoc/>>   
-        public async Task UpdateEmployee(EmployeeModel model)
+        public async Task UpdateEmployee(EmployeePoco model)
         {
             try
             {
@@ -122,7 +140,7 @@ namespace MyEmployee.Client.Wpf.Services
                 throw new Exception("Ошибка!", ex);
             }
 
-            UpdateEmployeeRequest MappingToUpdateRequest(EmployeeModel model)
+            UpdateEmployeeRequest MappingToUpdateRequest(EmployeePoco model)
             {
                 return new UpdateEmployeeRequest()
                 {
@@ -134,7 +152,7 @@ namespace MyEmployee.Client.Wpf.Services
         }
 
         /// <inheritdoc/>>        
-        public async Task DeleteEmployee(EmployeeModel model)
+        public async Task DeleteEmployee(EmployeePoco model)
         {
             try
             {
@@ -152,7 +170,7 @@ namespace MyEmployee.Client.Wpf.Services
                 throw new Exception("Ошибка!", ex);
             }
 
-            DeleteEmployeeRequest MappingToDeleteRequest(EmployeeModel model)
+            DeleteEmployeeRequest MappingToDeleteRequest(EmployeePoco model)
             {
                 return new DeleteEmployeeRequest()
                 {
@@ -169,28 +187,38 @@ namespace MyEmployee.Client.Wpf.Services
             channel.Dispose();
         }
 
-        private EmployeeModel Mapping(EmployeeReply response)
+        private EmployeePoco Mapping(EmployeeReply response)
         {
-            return new EmployeeModel()
+            return new EmployeePoco()
             {
                 //TODO: Маппинг
                 Id          = response.Id,
                 FirstName   = response.FirstName,
                 LastName    = response.LastName,
             };
-        }
-        private EmployeeModel Mapping(WorkerAction response)
+        }             
+
+        private EmployeeEvent Mapping(WorkerAction response)
         {
-            return new EmployeeModel()
+            return new EmployeeEvent(
+                Mapping(response.Worker),
+                MappingAction(response.ActionType));
+
+            EmployeeEventAction MappingAction(API.Action response)
             {
-                //TODO: Маппинг
-                Id = int.Parse(response.Worker.FirstName)
-            };
+                switch (response)
+                {
+                    case API.Action.Delete:
+                        return EmployeeEventAction.Delete;
+                    case API.Action.Update:
+                    case API.Action.Create:
+                    default:
+                        return EmployeeEventAction.UpdateOrCreate;
+                }
+            }
         }
 
 
-        
 
-        
     }
 }
